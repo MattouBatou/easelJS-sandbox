@@ -1,0 +1,34 @@
+html{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+}
+
+#gameContainer{
+  position:relative;
+  width:1920px;
+  height:1080px;
+  top:0;
+  left:0;
+  margin:0;
+  padding:0;
+}
+canvas{
+  position:relative;
+  width:1920px !important;
+  height:1080px !important;
+  top:0;
+  left:0;
+  margin:0;
+  padding:0;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: pixelated;
+  background-color: #2d215a;
+}
