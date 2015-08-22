@@ -48,11 +48,15 @@ var Testing = function() {
   function handleTick(e) {
     if (!e.paused) {
       val += 0.01;
-      val2+= 0.02;
+      val2+= 0.03;
       container.y = Math.floor(Math.sin(val)*60)+Math.floor(window.innerHeight/4);
       sprite.y = Math.floor(Math.cos(val)*80);
-      sprite2.y = Math.floor(Math.cos(val)*240);
+      sprite2.y = Math.floor(Math.cos(val2)*120);
       container.sortChildren(sortFunction);
+
+      container.x += 2;
+      if(container.x > Math.floor(window.innerWidth/2)+32)
+        container.x = -64;
     }
     stage.update();
   }

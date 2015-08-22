@@ -9,6 +9,23 @@ body{
   height:100%;
   margin:0;
   padding:0;
+  background-color: #49336c;
+  color:white;
+}
+
+a:link, a:visited{
+  color: #ffff83;
+}
+a:hover{
+  color: #fdd955;
+}
+
+ul > li{
+  list-style: none;
+}
+
+h1,h2,h3,h4{
+  margin-left:30px;
 }
 
 #gameContainer{
