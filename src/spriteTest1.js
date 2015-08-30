@@ -64,7 +64,7 @@ var Testing = function() {
   function handleClick(e) {
     console.log(e);
     var hit = e.target.hitTest(e.stageX, e.stageY);
-    e.target.y -=1;
+    e.target.x-=10;
     e.target.parent.sortChildren(sortFunction);
     stage.update();
   };
@@ -76,6 +76,7 @@ var Testing = function() {
   };
 
   stage.update();
+  console.log(stage);
 };
 
 window.onload=function(){ Testing() };

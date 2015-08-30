@@ -32889,7 +32889,7 @@ nwfjs.CanvasRenderingContext2D = CanvasRenderingContext2D;
  * @type Boolean
  * @since 1.0
  */
-CanvasRenderingContext2D.prototype.imageSmoothingEnabled = true;
+CanvasRenderingContext2D.prototype.imageSmoothingEnabled = false;
 // CANVAS Shaders
 /**
  * Replaces the default color shader with the specified shader. Setting the value to 0 enables the default shader.
@@ -33012,7 +33012,7 @@ CanvasRenderingContext2D.prototype.drawImageStream = function drawImageStream(im
  */
 CanvasRenderingContext2D.prototype.drawImageInstanced = function drawImageInstanced(count, img, sourceRects, destRects, matrix32s, color) {
     // TODO: finish this polyfill
-    /* var i = 0;
+    var i = 0;
      for (i; i < count; i++) {
 
          this.save();
@@ -33026,10 +33026,22 @@ CanvasRenderingContext2D.prototype.drawImageInstanced = function drawImageInstan
          this.globalAlpha = color[ i ];
 
          // this was based of the old spec so needs to be redone
-         this.drawImage( img, sourceRects[ i * 2 ], sourceRects[ i * 2 + 1 ], w, h, 0, 0, w, h );
+         // Matthew Lewis Polyfill addition
+         // Straight copy and paste
+         this.drawImage(img,
+           destRects[i * 2 + 0],
+           destRects[i * 2 + 1],
+           destRects[i * 2 + 2],
+           destRects[i * 2 + 3],
+           sourceRects[i * 2 + 0],
+           sourceRects[i * 2 + 1],
+           sourceRects[i * 2 + 2],
+           sourceRects[i * 2 + 3]
+         );
+
 
          this.restore();
-     }*/
+     }
     return null;
 };
 // CANVAS Shaders

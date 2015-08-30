@@ -28,10 +28,24 @@ h1,h2,h3,h4{
   margin-left:30px;
 }
 
+.demoSection{
+  position: relative;
+  display:inline-block;
+  width:24.8%;
+  height:100%;
+  top:0;
+  overflow-y:auto;
+}
+#nwf, #BvB-sandbox{
+  background-color:#7759bb;
+
+}
+
+
 #gameContainer{
   position:relative;
-  width:1920px;
-  height:1080px;
+  width:1921px;
+  height:1081px;
   top:0;
   left:0;
   margin:0;
@@ -39,13 +53,17 @@ h1,h2,h3,h4{
 }
 canvas{
   position:relative;
-  width:1920px !important;
-  height:1080px !important;
+  width:1921px !important;
+  height:1081px !important;
   top:0;
   left:0;
   margin:0;
   padding:0;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: pixelated;
-  background-color: #2d215a;
+  image-rendering: optimizeSpeed;             /* Older versions of FF          */
+  image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+  image-rendering: -webkit-optimize-contrast; /* Safari                        */
+  image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+  image-rendering: pixelated;                 /* Awesome future-browsers       */
+  -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+  background-color: #000;
 }
