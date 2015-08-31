@@ -59,7 +59,6 @@ var Testing = function (Level)
   {
     if (!e.paused)
     {
-      stageContext.save();
       val += 0.01;
       val2 += 0.03;
       y -= Math.sin(val*2)*10;
@@ -83,10 +82,8 @@ var Testing = function (Level)
 
       stage.update();
       //stageContext.drawImageInstanced(PARTICLES, buffer,  _rects, _rects, _mat32Buffer );
-      stageContext.setTransform(1, 0, 0, 1, 0, 0);
-      stageContext.colorShader = 0;
-
-      stageContext.restore();
+      /*stageContext.setTransform(1, 0, 0, 1, 0, 0);
+      stageContext.colorShader = 0;*/
     }
   }
 

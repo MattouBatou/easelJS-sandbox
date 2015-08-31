@@ -13,7 +13,6 @@
  */
 var Tilemap = function (stage, stageContext, TILEMAP_PATH, tiledJson, levelId, worldWidth, worldHeight)
 {
-  this.stageRef = stage;
   /**
    * @property {number} worldWidth - width of the world in pixels. This will mostly be updated with level width.
    */
@@ -41,7 +40,7 @@ var Tilemap = function (stage, stageContext, TILEMAP_PATH, tiledJson, levelId, w
   /**
    * @property {object} - Contains tileset data and array for the 2d map of tileset tiles.
    */
-  this.tilesetMap2d = this.tilesetLoader(stageContext, ( TILEMAP_PATH+levelId+"/" ));
+  this.tilesetMap2d = this.tilesetLoader(stage, stageContext, ( TILEMAP_PATH+levelId+"/" ));
 };
 
 
@@ -119,7 +118,6 @@ Tilemap.prototype.createMap2d = function (tiledMap)
     var levelProperties = tiledMap.properties[i];
     map2d.properties[i] = levelProperties;
   }
-
 
 
   // Set tilesets
@@ -280,41 +278,28 @@ Tilemap.prototype.createMap2d = function (tiledMap)
  * @param {object} stageContext - EaselJS Stage canvas context.
  * @param {string} path - Path to directory containing the tileset image.
  */
-Tilemap.prototype.tilesetLoader = function (stageContext, path)
+Tilemap.prototype.tilesetLoader = function (stage, stageContext, path)
 {
   var self = this;
 
   var tilesetImg = new Image();
   tilesetImg.src = path+this.map2d.tilesets[0].image.replace(/^.*[\\\/]/, ''); // chop the auto "../" Tiled adds to src path.
 
- /* var buffer = document.createElement('canvas');
-  buffer.context = buffer.getContext('2d');
-  buffer.context.imageSmoothingEnabled = false;
-  buffer.width = this.map2d.tilesets[0].imagewidth;
-  buffer.height = this.map2d.tilesets[0].imagewidth;*/
+  /* var buffer = document.createElement('canvas');
+   buffer.context = buffer.getContext('2d');
+   buffer.context.imageSmoothingEnabled = false;
+   buffer.width = this.map2d.tilesets[0].imagewidth;
+   buffer.height = this.map2d.tilesets[0].imagewidth;*/
 
   //this.map2d.tilesets[0].buffer = buffer;
+
 
   // Draw image to buffer canvas once loaded. Draw from buffer canvas context.
   tilesetImg.onload = function ()
   {
-    var ssData ={
-      images:[tilesetImg],
-      frames:{ width:32, height:32, count:self.map2d.tilesets[0].tilecount, regX:0, regY:0, spacing:0, margin:0 }
-    };
-    self.map2d.tilesets[0].spriteSheet = new createjs.SpriteSheet(ssData);
-    self.map2d.tilesets[0].container = new createjs.Container();
-    self.map2d.tilesets[0].container.x = 0;
-    self.map2d.tilesets[0].container.y = 0;
-    self.map2d.tilesets[0].container.tickEnabled = false;
-    self.map2d.tilesets[0].container.tickChildren = false;
-    self.map2d.tilesets[0].container.tickOnUpdate = false;
-    self.map2d.tilesets[0].container.mouseEnabled = false;
-    self.map2d.tilesets[0].container.autoClear = false;
-    self.map2d.tilesets[0].container.snapToPixel = false;
-    self.stageRef.addChild(self.map2d.tilesets[0].container);
+    self.map2d.tilesets[0].image = tilesetImg;
     //buffer.context.drawImage(tilesetImg, 0, 0, buffer.width, buffer.height);
-    self.buildMap(stageContext, self.map2d.width*self.map2d.tilewidth, self.map2d.height*self.map2d.tileheight, 0, 0);
+    self.buildMap(stage, stageContext, self.map2d.width*self.map2d.tilewidth, self.map2d.height*self.map2d.tileheight, 0, 0);
   };
 
   // TODO(matt): Figure out how to best attach each tileset canvas to a buffer canvas. We will need 1 buffer per tileset.
@@ -359,7 +344,7 @@ Tilemap.prototype.tilesetLoader = function (stageContext, path)
  * @param {number} x - x offset for the map in pixels.
  * @param {number} y - y offset for the map in pixels.
  */
-Tilemap.prototype.buildMap = function (stageContext, levelWidth, levelHeight, x, y)
+Tilemap.prototype.buildMap = function (stage, stageContext, levelWidth, levelHeight, x, y)
 {
   var self = this;
 
@@ -376,9 +361,32 @@ Tilemap.prototype.buildMap = function (stageContext, levelWidth, levelHeight, x,
   var mapTileWidth = this.map2d.tilewidth;
   var mapTileHeight = this.map2d.tileheight;
 
+  var tilemapContainer = new createjs.Container();
+  tilemapContainer.x = 0;
+  tilemapContainer.y = 0;
+
+  tilemapContainer.tickEnabled = false;
+  tilemapContainer.tickChildren = false;
+  tilemapContainer.tickOnUpdate = false;
+  tilemapContainer.mouseEnabled = false;
+  tilemapContainer.snapToPixel = false;
+
+  stage.addChild(tilemapContainer);
 
   for (var i = 0; i < layers.length; i++)
   {
+    var layerContainer = new createjs.Container();
+    layerContainer.x = 0;
+    layerContainer.y = 0;
+
+    layerContainer.tickEnabled = false;
+    layerContainer.tickChildren = false;
+    layerContainer.tickOnUpdate = false;
+    layerContainer.mouseEnabled = false;
+    layerContainer.snapToPixel = false;
+
+    tilemapContainer.addChild(layerContainer);
+
     // Each layer
     // Set layer vars
     var layerName = layers[i].name;
@@ -427,20 +435,25 @@ Tilemap.prototype.buildMap = function (stageContext, levelWidth, levelHeight, x,
           var tileset = this.map2d.tilesets[0];
           var stage_destX = ((cell.x+layerX))*mapScale;
           var stage_destY = ((cell.y+layerY))*mapScale;
-          var tile = new createjs.Sprite(this.map2d.tilesets[0].spriteSheet);
+          var tile = new createjs.Bitmap(this.map2d.tilesets[0].image);
           tile.x = cell.x;
           tile.y = cell.y;
-          tile.gotoAndStop(cell.gid-1);
-          this.map2d.tilesets[0].container.addChild(tile);
+          tile.sourceRect = {x:tileset.map[cell.gid].x, y:tileset.map[cell.gid].y, width:tileset.tilewidth, height:tileset.tilewidth };
+
+          tile.tickEnabled = false;
+          tile.mouseEnabled = false;
+          tile.snapToPixel = false;
+
+          layerContainer.addChild(tile);
 
           /*stageContext.drawImage(tilesetBuffer,
-                                 // Source
-                                 tileset.map[cell.gid].x, tileset.map[cell.gid].y,
-                                 tileset.tilewidth, tileset.tileheight,
-                                 // Stage canvas draw destination.
-                                 stage_destX, stage_destY,
-                                 self.map2d.tilewidth*mapScale, self.map2d.tileheight*mapScale
-          );*/
+           // Source
+           tileset.map[cell.gid].x, tileset.map[cell.gid].y,
+           tileset.tilewidth, tileset.tileheight,
+           // Stage canvas draw destination.
+           stage_destX, stage_destY,
+           self.map2d.tilewidth*mapScale, self.map2d.tileheight*mapScale
+           );*/
           //debugMode(mapScale);
         }
       }
